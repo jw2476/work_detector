@@ -35,7 +35,7 @@ struct Data {
 }
 
 fn main() {
-    let data: Data = serde_json::from_slice(&std::fs::read("2023_APRIL.json").unwrap()).unwrap();
+    let data: Data = serde_json::from_slice(&std::fs::read(std::env::args().skip(1).next().expect("Pass in a timeline file")).unwrap()).unwrap();
     let work_days = data.timeline.iter().cloned().filter_map(|event| match event {
         TimelineEvent::PlaceVisit(visit) => Some(visit),
         _ => None
