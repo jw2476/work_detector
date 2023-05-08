@@ -35,14 +35,17 @@ struct Data {
 }
 
 fn main() {
-    let data: Data = serde_json::from_slice(&std::fs::read(std::env::args().skip(1).next().expect("Pass in a timeline file")).unwrap()).unwrap();
-    let work_days = data.timeline.iter().cloned().filter_map(|event| match event {
-        TimelineEvent::PlaceVisit(visit) => Some(visit),
-        _ => None
-    }).filter(|visit| visit.location.name.is_some() && visit.location.name.as_ref().unwrap() == "Eight Bells Framing and Gallery").collect::<Vec<PlaceVisit>>();
-
-    println!("Worked for {} days", work_days.len());
-    work_days.iter().for_each(|day| {
-        println!("{}", &day.duration.start[0..10]);
+    std::env::args().skip(1).for_each(|file| {
+        let data: Data = serde_json::from_slice(&std::fs::read(&file).unwrap()).unwrap();
+        let work_days = data.timeline.iter().cloned().filter_map(|event| match event {
+            TimelineEvent::PlaceVisit(visit) => Some(visit),
+            _ => None
+        }).filter(|visit| visit.location.name.is_some() && visit.location.name.as_ref().unwrap() == "Eight Bells Framing and Gallery").collect::<Vec<PlaceVisit>>();
+        
+        println!("===== {} =====", file);
+        println!("Worked for {} days", work_days.len());
+        work_days.iter().for_each(|day| {
+            println!("{}", &day.duration.start[0..10]);
+        })
     })
 }
